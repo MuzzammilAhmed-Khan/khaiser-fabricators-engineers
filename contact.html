@@ -140,7 +140,12 @@
       <!-- Right: Form -->
       <div class="contact-form-wrap">
         <h3>Send Us a Message</h3>
-        <form action="#" method="POST">
+        <form id="contact-form" action="https://api.web3forms.com/submit" method="POST">
+          <input type="hidden" name="access_key" value="e25aa592-9d63-49e9-a4cb-b12f3cee10e3" />
+          <input type="hidden" name="subject" value="New Enquiry from Khaiser Fabricators Website" />
+          <input type="hidden" name="from_name" value="Khaiser Fabricators Website" />
+          <input type="checkbox" name="botcheck" style="display:none;" />
+
           <div class="form-row">
             <div class="form-group">
               <label for="name">Full Name *</label>
@@ -177,10 +182,17 @@
             <textarea id="message" name="message" placeholder="Describe your project requirements, dimensions, quantities, or any other details…" required></textarea>
           </div>
 
-          <button type="submit" class="btn btn-primary" style="width:100%; font-size:16px; padding:14px;">
+          <button type="submit" id="submit-btn" class="btn btn-primary" style="width:100%; font-size:16px; padding:14px;">
             Send Message
           </button>
         </form>
+
+        <div id="form-success" style="display:none;margin-top:20px;padding:18px 24px;background:#e8f5e9;border:1px solid #a5d6a7;border-radius:8px;color:#2e7d32;font-size:15px;text-align:center;">
+          ✓ Thank you! Your message has been sent. We'll get back to you shortly.
+        </div>
+        <div id="form-error" style="display:none;margin-top:20px;padding:18px 24px;background:#ffebee;border:1px solid #ef9a9a;border-radius:8px;color:#c62828;font-size:15px;text-align:center;">
+          Something went wrong. Please try again or call us directly.
+        </div>
       </div>
 
     </div>
@@ -259,5 +271,35 @@
 </footer>
 
 <script src="js/main.js"></script>
+<script>
+  const form = document.getElementById('contact-form');
+  const btn = document.getElementById('submit-btn');
+  const success = document.getElementById('form-success');
+  const error = document.getElementById('form-error');
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+    success.style.display = 'none';
+    error.style.display = 'none';
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        body: new FormData(form)
+      });
+      const data = await res.json();
+      if (data.success) {
+        form.reset();
+        success.style.display = 'block';
+      } else {
+        error.style.display = 'block';
+      }
+    } catch {
+      error.style.display = 'block';
+    }
+    btn.disabled = false;
+    btn.textContent = 'Send Message';
+  });
+</script>
 </body>
 </html>
